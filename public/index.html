@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Decryptor</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>PDF Decryptor</h1>
+        <form id="decryptForm" action="/decrypt" method="post" enctype="multipart/form-data">
+            <input type="file" name="pdfFile" accept=".pdf" required>
+            <input type="password" name="password" placeholder="Enter PDF Password" required>
+            <button type="submit">Decrypt PDF</button>
+        </form>
+        <div id="message"></div>
+    </div>
+    <script>
+        document.getElementById('decryptForm').onsubmit = function() {
+            document.getElementById('message').textContent = 'Processing... Please wait.';
+        };
+
+        // Clear the message after the file download starts
+        document.getElementById('decryptForm').addEventListener('submit', function(event) {
+            document.getElementById('message').textContent = 'Processing... Please wait.';
+        });
+
+        // Reset message if there's an error
+        document.getElementById('decryptForm').addEventListener('error', function() {
+            document.getElementById('message').textContent = 'An error occurred. Please try again.';
+        });
+    </script>
+</body>
+</html>
