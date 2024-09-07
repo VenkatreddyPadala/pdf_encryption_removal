@@ -3,32 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PDF Decryptor</title>
+    <title>PDF Decryptor and Encryptor</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
-        <h1>PDF Decryptor</h1>
-        <form id="decryptForm" action="/decrypt" method="post" enctype="multipart/form-data">
+     <!-- Navigation Bar -->
+     <nav>
+        <div class="nav-container">
+            <h1>VenkatDocs</h1>
+            <ul class="nav-links">
+                <li><a href="#" id="decryptorLink">Decryptor</a></li>
+                <li><a href="#" id="encryptorLink">Encryptor</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Welcome Section -->
+    <header id="welcomeSection" class="section">
+        <h2>Welcome to my website</h2>
+        <p>Use this site to decrypt and encrypt your PDF files with ease.</p>
+    </header>
+
+    <!-- PDF Decryptor Section -->
+    <div id="decryptorSection" class="section" style="display:none;">
+        <h2>PDF Decryptor</h2>
+        <form id="decryptForm" action="/decrypt" method="post" enctype="multipart/form-data" target="downloadFrame">
             <input type="file" name="pdfFile" accept=".pdf" required>
             <input type="password" name="password" placeholder="Enter PDF Password" required>
             <button type="submit">Decrypt PDF</button>
         </form>
-        <div id="message"></div>
+        <div id="decryptMessage"></div>
     </div>
-    <script>
-        document.getElementById('decryptForm').onsubmit = function() {
-            document.getElementById('message').textContent = 'Processing... Please wait.';
-        };
 
-        // Clear the message after the file download starts
-        document.getElementById('decryptForm').addEventListener('submit', function(event) {
-            document.getElementById('message').textContent = 'Processing... Please wait.';
+    <!-- PDF Encryptor Section -->
+    <div id="encryptorSection" class="section" style="display:none;">
+        <h2>PDF Encryptor</h2>
+        <form id="encryptForm" action="/encrypt" method="post" enctype="multipart/form-data" target="downloadFrame">
+            <input type="file" name="pdfFile" accept=".pdf" required>
+            <input type="password" name="password" placeholder="Enter Password to Encrypt PDF" required>
+            <button type="submit">Encrypt PDF</button>
+        </form>
+        <div id="encryptMessage"></div>
+    </div>
+
+    <!-- Invisible iframe for file downloads -->
+    <iframe id="downloadFrame" style="display: none;"></iframe>
+
+    <script>
+        // Function to hide all sections
+        function hideAllSections() {
+            document.getElementById('welcomeSection').style.display = 'none';
+            document.getElementById('decryptorSection').style.display = 'none';
+            document.getElementById('encryptorSection').style.display = 'none';
+        }
+
+        // Function to show a specific section
+        function showSection(sectionId) {
+            hideAllSections(); // Hide all sections first
+            document.getElementById(sectionId).style.display = 'block'; // Show the specified section
+        }
+
+        // Event listeners for navigation links
+        document.getElementById('decryptorLink').addEventListener('click', function() {
+            showSection('decryptorSection');
         });
 
-        // Reset message if there's an error
+        document.getElementById('encryptorLink').addEventListener('click', function() {
+            showSection('encryptorSection');
+        });
+
+        // Handle Decryptor form submission
+        document.getElementById('decryptForm').onsubmit = function() {
+            document.getElementById('decryptMessage').textContent = 'Decrypting... Please wait.';
+        };
+
+        document.getElementById('decryptForm').addEventListener('submit', function() {
+            document.getElementById('decryptMessage').textContent = 'Decrypting... Please wait.';
+        });
+
+        // Handle Encryptor form submission
+        document.getElementById('encryptForm').onsubmit = function() {
+            document.getElementById('encryptMessage').textContent = 'Encrypting... Please wait.';
+        };
+
+        document.getElementById('encryptForm').addEventListener('submit', function() {
+            document.getElementById('encryptMessage').textContent = 'Encrypting... Please wait.';
+        });
+
+        // Handle download completion
+        function handleDownloadComplete() {
+            document.getElementById('decryptMessage').textContent = 'Decryption completed!';
+            document.getElementById('encryptMessage').textContent = 'Encryption completed!';
+        }
+
+        // Listen for successful download in iframe (for both decrypt and encrypt)
+        document.getElementById('downloadFrame').onload = function() {
+            if (document.getElementById('decryptForm')) {
+                document.getElementById('decryptMessage').textContent = 'Decryption completed!';
+            }
+            if (document.getElementById('encryptForm')) {
+                document.getElementById('encryptMessage').textContent = 'Encryption completed!';
+            }
+        };
+
+        // Reset message if there's an error (just for robustness)
         document.getElementById('decryptForm').addEventListener('error', function() {
-            document.getElementById('message').textContent = 'An error occurred. Please try again.';
+            document.getElementById('decryptMessage').textContent = 'An error occurred during decryption. Please try again.';
+        });
+
+        document.getElementById('encryptForm').addEventListener('error', function() {
+            document.getElementById('encryptMessage').textContent = 'An error occurred during encryption. Please try again.';
         });
     </script>
 </body>
