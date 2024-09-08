@@ -3,29 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PDF Decryptor and Encryptor</title>
+    <title>VenkatDocs - PDF Tool</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-     <!-- Navigation Bar -->
-     <nav>
-        <div class="nav-container">
-            <h1>VenkatDocs</h1>
-            <ul class="nav-links">
-                <li><a href="#" id="decryptorLink">Decryptor</a></li>
-                <li><a href="#" id="encryptorLink">Encryptor</a></li>
-            </ul>
-        </div>
+    <!-- Navigation -->
+    <nav>
+        <h1>VenkatDocs</h1>
+        <ul>
+            <li><a href="#" onclick="showSection('welcome')">Welcome</a></li>
+            <li><a href="#" onclick="showSection('decryptor')">PDF Decryptor</a></li>
+            <li><a href="#" onclick="showSection('encryptor')">PDF Encryptor</a></li>
+            <li><a href="#" onclick="showSection('pdfToDoc')">PDF to DOC</a></li>
+            <li><a href="#" onclick="showSection('docToPdf')">DOC to PDF</a></li>
+        </ul>
     </nav>
 
-    <!-- Welcome Section -->
-    <header id="welcomeSection" class="section">
+    <!-- Sections -->
+    <div id="welcome" class="section">
         <h2>Welcome to my website</h2>
-        <p>Use this site to decrypt and encrypt your PDF files with ease.</p>
-    </header>
+        <p>This is VenkatDocs, where you can encrypt, decrypt, and convert files between PDF and DOC formats.</p>
+    </div>
 
-    <!-- PDF Decryptor Section -->
-    <div id="decryptorSection" class="section" style="display:none;">
+    <div id="decryptor" class="section" style="display:none;">
         <h2>PDF Decryptor</h2>
         <form id="decryptForm" action="/decrypt" method="post" enctype="multipart/form-data" target="downloadFrame">
             <input type="file" name="pdfFile" accept=".pdf" required>
@@ -35,8 +35,7 @@
         <div id="decryptMessage"></div>
     </div>
 
-    <!-- PDF Encryptor Section -->
-    <div id="encryptorSection" class="section" style="display:none;">
+    <div id="encryptor" class="section" style="display:none;">
         <h2>PDF Encryptor</h2>
         <form id="encryptForm" action="/encrypt" method="post" enctype="multipart/form-data" target="downloadFrame">
             <input type="file" name="pdfFile" accept=".pdf" required>
@@ -46,74 +45,50 @@
         <div id="encryptMessage"></div>
     </div>
 
-    <!-- Invisible iframe for file downloads -->
+    <!-- PDF to DOC Form -->
+    <div id="pdfToDoc" class="section" style="display:none;">
+        <h2>PDF to DOC</h2>
+        <form id="pdfToDocForm" action="/pdf-to-doc" method="post" enctype="multipart/form-data" target="downloadFrame">
+            <input type="file" name="pdfFile" accept=".pdf" required>
+            <button type="submit">Convert PDF to DOC</button>
+        </form>
+        <div id="pdfToDocMessage"></div>
+    </div>
+
+    <!-- DOC to PDF Form -->
+    <div id="docToPdf" class="section" style="display:none;">
+        <h2>DOC to PDF</h2>
+        <form id="docToPdfForm" action="/doc-to-pdf" method="post" enctype="multipart/form-data" target="downloadFrame">
+            <input type="file" name="docFile" accept=".doc,.docx" required>
+            <button type="submit">Convert DOC to PDF</button>
+        </form>
+        <div id="docToPdfMessage"></div>
+    </div>
+
+    <!-- Invisible iframe for downloads -->
     <iframe id="downloadFrame" style="display: none;"></iframe>
 
     <script>
-        // Function to hide all sections
-        function hideAllSections() {
-            document.getElementById('welcomeSection').style.display = 'none';
-            document.getElementById('decryptorSection').style.display = 'none';
-            document.getElementById('encryptorSection').style.display = 'none';
-        }
-
-        // Function to show a specific section
+        // Function to toggle between sections
         function showSection(sectionId) {
-            hideAllSections(); // Hide all sections first
-            document.getElementById(sectionId).style.display = 'block'; // Show the specified section
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => section.style.display = 'none');
+            document.getElementById(sectionId).style.display = 'block';
         }
 
-        // Event listeners for navigation links
-        document.getElementById('decryptorLink').addEventListener('click', function() {
-            showSection('decryptorSection');
-        });
+        // Form messages for all sections
+        document.getElementById('decryptForm').onsubmit = () => document.getElementById('decryptMessage').textContent = 'Decrypting... Please wait.';
+        document.getElementById('encryptForm').onsubmit = () => document.getElementById('encryptMessage').textContent = 'Encrypting... Please wait.';
+        document.getElementById('pdfToDocForm').onsubmit = () => document.getElementById('pdfToDocMessage').textContent = 'Converting... Please wait.';
+        document.getElementById('docToPdfForm').onsubmit = () => document.getElementById('docToPdfMessage').textContent = 'Converting... Please wait.';
 
-        document.getElementById('encryptorLink').addEventListener('click', function() {
-            showSection('encryptorSection');
-        });
-
-        // Handle Decryptor form submission
-        document.getElementById('decryptForm').onsubmit = function() {
-            document.getElementById('decryptMessage').textContent = 'Decrypting... Please wait.';
-        };
-
-        document.getElementById('decryptForm').addEventListener('submit', function() {
-            document.getElementById('decryptMessage').textContent = 'Decrypting... Please wait.';
-        });
-
-        // Handle Encryptor form submission
-        document.getElementById('encryptForm').onsubmit = function() {
-            document.getElementById('encryptMessage').textContent = 'Encrypting... Please wait.';
-        };
-
-        document.getElementById('encryptForm').addEventListener('submit', function() {
-            document.getElementById('encryptMessage').textContent = 'Encrypting... Please wait.';
-        });
-
-        // Handle download completion
-        function handleDownloadComplete() {
+        // Reset messages after downloads
+        document.getElementById('downloadFrame').onload = function() {
             document.getElementById('decryptMessage').textContent = 'Decryption completed!';
             document.getElementById('encryptMessage').textContent = 'Encryption completed!';
-        }
-
-        // Listen for successful download in iframe (for both decrypt and encrypt)
-        document.getElementById('downloadFrame').onload = function() {
-            if (document.getElementById('decryptForm')) {
-                document.getElementById('decryptMessage').textContent = 'Decryption completed!';
-            }
-            if (document.getElementById('encryptForm')) {
-                document.getElementById('encryptMessage').textContent = 'Encryption completed!';
-            }
+            document.getElementById('pdfToDocMessage').textContent = 'Conversion to DOC completed!';
+            document.getElementById('docToPdfMessage').textContent = 'Conversion to PDF completed!';
         };
-
-        // Reset message if there's an error (just for robustness)
-        document.getElementById('decryptForm').addEventListener('error', function() {
-            document.getElementById('decryptMessage').textContent = 'An error occurred during decryption. Please try again.';
-        });
-
-        document.getElementById('encryptForm').addEventListener('error', function() {
-            document.getElementById('encryptMessage').textContent = 'An error occurred during encryption. Please try again.';
-        });
     </script>
 </body>
 </html>
